@@ -1,0 +1,48 @@
+{
+  "messages": [
+    {
+      "sender": "8e84985e8b3e4704b0807705a83b1267",
+      "time": 1745785503.882588,
+      "raw_time": false,
+      "mentions": [
+        "jupyter-ai-personas::test_ai_persona::AINotebookCollaborator"
+      ],
+      "id": "898c49a2-848a-4164-a495-19fdfe495b4c",
+      "type": "msg",
+      "body": "@AI-Collaborator hi"
+    }
+  ],
+  "users": {
+    "jupyter-ai-personas::jupyter_ai::JupyternautPersona": {
+      "name": "Jupyternaut",
+      "avatar_url": "/api/ai/static/jupyternaut.svg",
+      "mention_name": null,
+      "initials": null,
+      "display_name": "Jupyternaut",
+      "username": "jupyter-ai-personas::jupyter_ai::JupyternautPersona",
+      "color": null
+    },
+    "jupyter-ai-personas::test_ai_persona::AINotebookCollaborator": {
+      "color": null,
+      "name": "AI Collaborator",
+      "username": "jupyter-ai-personas::test_ai_persona::AINotebookCollaborator",
+      "display_name": "AI Collaborator",
+      "initials": null,
+      "avatar_url": "/api/ai/static/jupyternaut.svg",
+      "mention_name": "@AI-Collaborator"
+    },
+    "8e84985e8b3e4704b0807705a83b1267": {
+      "initials": "AH",
+      "avatar_url": null,
+      "color": "var(--jp-collaborator-color3)",
+      "mention_name": "@Anonymous-Helike",
+      "display_name": "Anonymous Helike",
+      "username": "8e84985e8b3e4704b0807705a83b1267",
+      "name": "Anonymous Helike"
+    }
+  },
+  "attachments": {},
+  "metadata": {
+    "id": "6c826e9b-f241-449e-8907-5bddc32d1256"
+  }
+}
