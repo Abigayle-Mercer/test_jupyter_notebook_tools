@@ -43,32 +43,32 @@ async def write_to_cell(ynotebook: YNotebook, index: int, content: str, stream=T
             if tag == "equal":
                 cursor += (i2 - i1)
             elif tag == "delete":
-                for _ in range(i2 - i1):
-                    result.pop(cursor)
+                for offset in reversed(range(i2 - i1)):
+                    del result[cursor + offset]
                     ycell["source"] = ''.join(result)
                     ynotebook.set_cell(index, ycell)
-                    await asyncio.sleep(0.01)
+                    await asyncio.sleep(0.09)
             elif tag == "insert":
                 for c in new[j1:j2]:
                     result.insert(cursor, c)
                     cursor += 1
                     ycell["source"] = ''.join(result)
                     ynotebook.set_cell(index, ycell)
-                    await asyncio.sleep(0.01)
+                    await asyncio.sleep(0.09)
             elif tag == "replace":
                 # Simulate deletion first
                 for _ in range(i2 - i1):
                     result.pop(cursor)
                     ycell["source"] = ''.join(result)
                     ynotebook.set_cell(index, ycell)
-                    await asyncio.sleep(0.01)
+                    await asyncio.sleep(0.09)
                 # Then insertion
                 for c in new[j1:j2]:
                     result.insert(cursor, c)
                     cursor += 1
                     ycell["source"] = ''.join(result)
                     ynotebook.set_cell(index, ycell)
-                    await asyncio.sleep(0.01)
+                    await asyncio.sleep(0.09)
 
         return f"✅ Updated cell {index}."
     except Exception as e:
