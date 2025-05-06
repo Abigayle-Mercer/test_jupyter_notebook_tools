@@ -1,6 +1,7 @@
 from jupyter_ydoc import YNotebook  # assuming you're using this YNotebook
 import asyncio
 import json
+import difflib
 
 
 
@@ -17,24 +18,62 @@ async def delete_cell(ynotebook: YNotebook, index: int) -> str:
         return f"❌ Error cutting cell {index}: {str(e)}"
 
 
+# line diff
+# python diff lib
+# submit diffs 
 
 async def write_to_cell(ynotebook: YNotebook, index: int, content: str, stream=True) -> str:
     """Overwrite the source of a cell in the notebook at given path."""
     try:
         ycell = ynotebook.get_cell(index)
+        old = ycell["source"]
+        new = content
 
-        # Streaming cell changes... so it looks like an AI is typing.
-        if stream:
-            for item in list(content):
-                ycell["source"] += item
-                ynotebook.set_cell(index, ycell)
-                await asyncio.sleep(.01)
-        else:
-            ycell["source"] = content
-        
+        if not stream:
+            ycell["source"] = new
+            ynotebook.set_cell(index, ycell)
+            return f"✅ Overwrote cell {index}."
+
+        # Break into characters for detailed comparison
+        sm = difflib.SequenceMatcher(None, old, new)
+        result = list(old)
+        cursor = 0  # Position in `result` where edits happen
+
+        for tag, i1, i2, j1, j2 in sm.get_opcodes():
+            if tag == "equal":
+                cursor += (i2 - i1)
+            elif tag == "delete":
+                for _ in range(i2 - i1):
+                    result.pop(cursor)
+                    ycell["source"] = ''.join(result)
+                    ynotebook.set_cell(index, ycell)
+                    await asyncio.sleep(0.01)
+            elif tag == "insert":
+                for c in new[j1:j2]:
+                    result.insert(cursor, c)
+                    cursor += 1
+                    ycell["source"] = ''.join(result)
+                    ynotebook.set_cell(index, ycell)
+                    await asyncio.sleep(0.01)
+            elif tag == "replace":
+                # Simulate deletion first
+                for _ in range(i2 - i1):
+                    result.pop(cursor)
+                    ycell["source"] = ''.join(result)
+                    ynotebook.set_cell(index, ycell)
+                    await asyncio.sleep(0.01)
+                # Then insertion
+                for c in new[j1:j2]:
+                    result.insert(cursor, c)
+                    cursor += 1
+                    ycell["source"] = ''.join(result)
+                    ynotebook.set_cell(index, ycell)
+                    await asyncio.sleep(0.01)
+
         return f"✅ Updated cell {index}."
     except Exception as e:
-        return f"❌ Error writing to cell {index}: {str(e)}"
+        return f"❌ Error editing cell {index}: {str(e)}"
+
 
 
 async def add_cell(ynotebook: YNotebook, index: int, cell_type: str = "code") -> str:
