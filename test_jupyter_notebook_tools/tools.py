@@ -18,10 +18,6 @@ async def delete_cell(ynotebook: YNotebook, index: int) -> str:
         return f"❌ Error cutting cell {index}: {str(e)}"
 
 
-# line diff
-# python diff lib
-# submit diffs 
-
 async def write_to_cell(ynotebook: YNotebook, index: int, content: str, stream=True) -> str:
     """Overwrite the source of a cell in the notebook at given path."""
     try:
