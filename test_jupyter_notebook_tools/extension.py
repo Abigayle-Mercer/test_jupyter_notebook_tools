@@ -1,5 +1,10 @@
 from . import tools
 
+def jupyter_server_extension_points():
+    return [{
+        "module": "test_jupyter_notebook_tools"
+    }]
+
 def jupyter_server_extension_tools() -> dict:
     return {
         "delete_cell": {
@@ -83,3 +88,7 @@ def jupyter_server_extension_tools() -> dict:
             "callable": tools.read_notebook
         }
     }
+
+
+def _load_jupyter_server_extension(serverapp):
+    serverapp.log.info("✅ test_jupyter_notebook_toolss extension loaded.")

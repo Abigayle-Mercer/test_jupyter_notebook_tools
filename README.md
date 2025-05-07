@@ -1,91 +1,65 @@
-# test_jupyter_notebook_tools
+# jupyter_ydoc_tools
 
-[![Github Actions Status](https://github.com/github_username/test_jupyter_notebook_tools/workflows/Build/badge.svg)](https://github.com/github_username/test_jupyter_notebook_tools/actions/workflows/build.yml)
+**A Jupyter Server Extension for Real-Time Notebook Manipulation with YNotebook and AI Personas**
 
-A Jupyter Server extension.
+This extension exposes a collection of tools for manipulating live Jupyter notebooks using [YNotebook](https://github.com/jupyter/ydoc). It is designed for use with AI personas and LLM agents (e.g. LangGraph, CrewAI, or Jupyter AI v3) that need to read from or write to notebooks collaboratively and in real time.
 
-## Requirements
+> ✨ Supports character-by-character streaming edits, cell creation, and full notebook inspection — all with awareness of Yjs CRDTs.
 
-- Jupyter Server
+---
 
-## Install
+## 🚀 Features
 
-To install the extension, execute:
+- 📌 **`write_to_cell`**: Streams character-level diffs into notebook cells to simulate real-time typing  
+- ✂️ **`delete_cell`**: Deletes a cell and returns its contents  
+- ➕ **`add_cell`**: Inserts a new blank cell at any index  
+- 🔍 **`read_cell`**: Reads the full JSON structure of a cell, including source, outputs, metadata  
+- 📖 **`read_notebook`**: Dumps the full notebook as a list of cell JSON objects  
+- 🔢 **`get_max_cell_index`**: Returns the last valid cell index in the current notebook  
 
-```bash
-pip install test_jupyter_notebook_tools
+These tools are useful for LLM-powered workflows that aim to *collaborate* with users, not just autocomplete for them.
+
+---
+
+## 🧩 How it Works
+
+The extension uses the standard Jupyter server extension discovery mechanism (`jupyter_server_extension_tools`) to expose a dictionary of callable tools along with metadata and parameter schemas.
+
+Each tool accepts a live `YNotebook` instance (injected at runtime) and performs operations using Yjs-compatible APIs. Some tools stream their actions using `asyncio.sleep` to simulate AI typing behavior.
+
+---
+
+## 🛠 Example Tool
+
+```python
+await write_to_cell(ynotebook, index=1, content="print('Hello world')", stream=True)
 ```
 
-## Uninstall
+This will:
+* Diff the existing content vs. the new content
+* Simulate deletions (in reverse)
+* Stream insertions character-by-character
 
-To remove the extension, execute:
 
-```bash
-pip uninstall test_jupyter_notebook_tools
-```
-
-## Troubleshoot
-
-If you are seeing the frontend extension, but it is not working, check
-that the server extension is enabled:
+## 📦 Installation
 
 ```bash
-jupyter server extension list
+pip install jupyter-ydoc-tools
+jupyter server extension enable jupyter_ydoc_tools
 ```
 
-## Contributing
+## 🧠 Use with AI Personas
 
-### Development install
+If you're building an AI persona using LangGraph, LangChain, or Agno that operates inside JupyterLab, this extension enables your agent to:
+* Discover tools at runtime (via list_ai_tools())
+* Access live notebook state
+* Modify cells interactively
 
-```bash
-# Clone the repo to your local environment
-# Change directory to the test_jupyter_notebook_tools directory
-# Install package in development mode - will automatically enable
-# The server extension.
-pip install -e .
-```
+## 📚 License
+MIT © 2024 Your Name
 
 
-You can watch the source directory and run your Jupyter Server-based application at the same time in different terminals to watch for changes in the extension's source and automatically rebuild the extension.  For example,
-when running JupyterLab:
+## 🙋 Contributing
+PRs welcome! Open an issue if you find a bug or want to suggest a new tool.
+Let me know if you'd like a matching `pyproject.toml`, GitHub Actions workflow, or usage examples in LangGraph or Agno.
 
-```bash
-jupyter lab --autoreload
-```
-
-If your extension does not depend a particular frontend, you can run the
-server directly:
-
-```bash
-jupyter server --autoreload
-```
-
-### Running Tests
-
-Install dependencies:
-
-```bash
-pip install -e ".[test]"
-```
-
-To run the python tests, use:
-
-```bash
-pytest
-
-# To test a specific file
-pytest test_jupyter_notebook_tools/tests/test_handlers.py
-
-# To run a specific test
-pytest test_jupyter_notebook_tools/tests/test_handlers.py -k "test_get"
-```
-
-### Development uninstall
-
-```bash
-pip uninstall test_jupyter_notebook_tools
-```
-
-### Packaging the extension
-
-See [RELEASE](RELEASE.md)
