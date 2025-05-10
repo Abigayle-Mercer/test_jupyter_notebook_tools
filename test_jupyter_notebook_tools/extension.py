@@ -201,7 +201,7 @@ def jupyter_server_extension_tools() -> dict:
                     "required": ["path"]
                 }
             },
-            "callable": git_tools.git_get_repo_root_from_notebookpath
+            "callable": git_tools.git_get_repo_root
         }
     }
 
