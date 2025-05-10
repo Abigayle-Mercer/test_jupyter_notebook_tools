@@ -1,9 +1,8 @@
-from . import tools
+from . import ynotebook_tools
+from . import git_tools
 
-def jupyter_server_extension_points():
-    return [{
-        "module": "test_jupyter_notebook_tools"
-    }]
+
+
 
 def jupyter_server_extension_tools() -> dict:
     return {
@@ -19,7 +18,7 @@ def jupyter_server_extension_tools() -> dict:
                     "required": ["index"]
                 }
             },
-            "callable": tools.delete_cell
+            "callable": ynotebook_tools.delete_cell
         },
         "add_cell": {
             "metadata": {
@@ -34,7 +33,7 @@ def jupyter_server_extension_tools() -> dict:
                     "required": ["index"]
                 }
             },
-            "callable": tools.add_cell
+            "callable": ynotebook_tools.add_cell
         },
         "write_to_cell": {
             "metadata": {
@@ -49,7 +48,7 @@ def jupyter_server_extension_tools() -> dict:
                     "required": ["index", "content"]
                 }
             },
-            "callable": tools.write_to_cell
+            "callable": ynotebook_tools.write_to_cell
         },
         "get_max_cell_index": {
             "metadata": {
@@ -60,7 +59,7 @@ def jupyter_server_extension_tools() -> dict:
                     "properties": {}
                 }
             },
-            "callable": tools.get_max_cell_index
+            "callable": ynotebook_tools.get_max_cell_index
         },
         "read_cell": {
             "metadata": {
@@ -74,7 +73,7 @@ def jupyter_server_extension_tools() -> dict:
                     "required": ["index"]
                 }
             },
-            "callable": tools.read_cell
+            "callable": ynotebook_tools.read_cell
         },
         "read_notebook": {
             "metadata": {
@@ -85,10 +84,124 @@ def jupyter_server_extension_tools() -> dict:
                     "properties": {}
                 }
             },
-            "callable": tools.read_notebook
+            "callable": ynotebook_tools.read_notebook
+        },
+         "git_clone": {
+            "metadata": {
+                "name": "git_clone",
+                "description": "Clone a Git repo into the specified path.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "path": {"type": "string", "description": "Target path"},
+                        "url": {"type": "string", "description": "Repository URL"}
+                    },
+                    "required": ["path", "url"]
+                }
+            },
+            "callable": git_tools.git_clone
+        },
+        "git_status": {
+            "metadata": {
+                "name": "git_status",
+                "description": "Get the current Git status in the specified path.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "path": {"type": "string", "description": "Repo path"},
+                    },
+                    "required": ["path"]
+                }
+            },
+            "callable": git_tools.git_status
+        },
+        "git_log": {
+            "metadata": {
+                "name": "git_log",
+                "description": "Get the last N Git commits.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "path": {"type": "string", "description": "Repo path"},
+                        "history_count": {"type": "integer", "default": 10, "description": "Number of commits"}
+                    },
+                    "required": ["path"]
+                }
+            },
+            "callable": git_tools.git_log
+        },
+        "git_pull": {
+            "metadata": {
+                "name": "git_pull",
+                "description": "Pull the latest changes from the remote.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "path": {"type": "string", "description": "Repo path"}
+                    },
+                    "required": ["path"]
+                }
+            },
+            "callable": git_tools.git_pull
+        },
+        "git_push": {
+            "metadata": {
+                "name": "git_push",
+                "description": "Push local changes to the remote.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "path": {"type": "string", "description": "Repo path"}
+                    },
+                    "required": ["path"]
+                }
+            },
+            "callable": git_tools.git_push
+        },
+        "git_commit": {
+            "metadata": {
+                "name": "git_commit",
+                "description": "Commit staged changes with a message.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "path": {"type": "string", "description": "Repo path"},
+                        "message": {"type": "string", "description": "Commit message"}
+                    },
+                    "required": ["path", "message"]
+                }
+            },
+            "callable": git_tools.git_commit
+        },
+        "git_add": {
+            "metadata": {
+                "name": "git_add",
+                "description": "Stage files for commit. Optionally add all files.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "path": {"type": "string", "description": "Repo path"},
+                        "add_all": {"type": "boolean", "default": True, "description": "Stage all files"},
+                        "filename": {"type": "string", "description": "File to add (used if add_all is false)"}
+                    },
+                    "required": ["path"]
+                }
+            },
+            "callable": git_tools.git_add
+        },
+        "git_get_repo_root_from_notebookpath": {
+            "metadata": {
+                "name": "git_get_repo_root_from_notebookpath",
+                "description": "Given the path of a file, return the path to the Repo root, if any.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "path": {"type": "string", "description": "notebook path"},
+                    },
+                    "required": ["path"]
+                }
+            },
+            "callable": git_tools.git_get_repo_root_from_notebookpath
         }
     }
 
-
-def _load_jupyter_server_extension(serverapp):
-    serverapp.log.info("✅ test_jupyter_notebook_toolss extension loaded.")

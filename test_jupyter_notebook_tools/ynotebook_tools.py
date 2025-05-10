@@ -5,6 +5,8 @@ import difflib
 
 
 
+# package --> 
+# extension --> jupyter_ai_tools 
 
 
 
@@ -127,3 +129,5 @@ async def read_notebook(ynotebook: YNotebook) -> str:
         return json.dumps(cells, indent=2)
     except Exception as e:
         return f"❌ Error reading notebook: {str(e)}"
+
+
