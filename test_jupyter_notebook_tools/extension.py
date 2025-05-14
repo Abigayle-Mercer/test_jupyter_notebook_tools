@@ -151,7 +151,8 @@ def jupyter_server_extension_tools() -> dict:
                 "parameters": {
                     "type": "object",
                     "properties": {
-                        "path": {"type": "string", "description": "Repo path"}
+                        "path": {"type": "string", "description": "Repo path"}, 
+                        "branch": {"type": "string", "description": "REpo branch"}
                     },
                     "required": ["path"]
                 }
