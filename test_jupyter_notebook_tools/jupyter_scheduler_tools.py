@@ -1,31 +1,29 @@
 import json
-from jupyter_scheduler.scheduler import Scheduler
 from jupyter_server.utils import ensure_async
-from jupyter_server.serverapp import ServerApp
-from jupyter_scheduler.environments import DefaultEnvironmentsManager
 
-root_dir = ServerApp.instance().root_dir
-env_mgr = DefaultEnvironmentsManager()
-db_url = "sqlite:///scheduler-jobs.sqlite"
-
-scheduler = Scheduler(root_dir=root_dir, environments_manager=env_mgr, db_url=db_url)
-_scheduler_started = False
-
-async def ensure_scheduler_started():
-    global _scheduler_started
-    if not _scheduler_started:
-        await ensure_async(scheduler.start())
-        _scheduler_started = True
+# ✅ REFACTORED versions of the scheduler tools.
+# Each expects `scheduler` (a Scheduler instance) as the first argument
 
 async def scheduler_create_job(
+    scheduler,
     notebook_path: str,
     name: str = "Scheduled Job",
     cron_schedule: str = None
 ) -> str:
     """
-    Schedule a notebook to be executed, optionally on a recurring basis using cron.
+    Create a new scheduled job using the Jupyter Scheduler extension.
+
+    Parameters:
+        scheduler: The Scheduler instance to use.
+        notebook_path: The full path to the notebook to be scheduled.
+        name: The name for the scheduled job.
+        cron_schedule: Optional cron schedule string for recurring jobs.
+
+    Returns:
+        A string message indicating success or failure.
     """
-    await ensure_scheduler_started()
+    if not scheduler:
+        return "❌ Scheduler not available."
 
     job_data = {
         "name": name,
@@ -39,12 +37,43 @@ async def scheduler_create_job(
         return f"✅ Job created with ID: {job['id']}"
     except Exception as e:
         return f"❌ Failed to create job: {str(e)}"
+    
 
-async def scheduler_list_jobs() -> str:
+
+async def scheduler_run_job(scheduler, job_id: str) -> str:
     """
-    Return a list of all scheduled jobs.
+    Trigger a scheduled job to run immediately.
+
+    Parameters:
+        scheduler: The Scheduler instance to use.
+        job_id: The ID of the job to run.
+
+    Returns:
+        A string message indicating success or failure.
     """
-    await ensure_scheduler_started()
+    if not scheduler:
+        return "❌ Scheduler not available."
+
+    try:
+        job = await ensure_async(scheduler.run_job(job_id))
+        return f"🚀 Job `{job_id}` has been started."
+    except Exception as e:
+        return f"❌ Failed to run job {job_id}: {str(e)}"
+
+
+
+async def scheduler_list_jobs(scheduler) -> str:
+    """
+    List all scheduled jobs.
+
+    Parameters:
+        scheduler: The Scheduler instance to use.
+
+    Returns:
+        A JSON-formatted string of all jobs or an error message.
+    """
+    if not scheduler:
+        return "❌ Scheduler not available."
 
     try:
         jobs = await ensure_async(scheduler.list_jobs())
@@ -52,11 +81,20 @@ async def scheduler_list_jobs() -> str:
     except Exception as e:
         return f"❌ Failed to list jobs: {str(e)}"
 
-async def scheduler_get_job(job_id: str) -> str:
+
+async def scheduler_get_job(scheduler, job_id: str) -> str:
     """
-    Fetch metadata and status for a specific job.
+    Get detailed information about a specific job.
+
+    Parameters:
+        scheduler: The Scheduler instance to use.
+        job_id: The unique identifier for the job.
+
+    Returns:
+        A string containing JSON-formatted job information or an error message.
     """
-    await ensure_scheduler_started()
+    if not scheduler:
+        return "❌ Scheduler not available."
 
     try:
         job = await ensure_async(scheduler.get_job(job_id))
@@ -64,11 +102,20 @@ async def scheduler_get_job(job_id: str) -> str:
     except Exception as e:
         return f"❌ Failed to get job {job_id}: {str(e)}"
 
-async def scheduler_cancel_job(job_id: str) -> str:
+
+async def scheduler_cancel_job(scheduler, job_id: str) -> str:
     """
-    Cancel a scheduled job by ID.
+    Cancel a job by its ID.
+
+    Parameters:
+        scheduler: The Scheduler instance to use.
+        job_id: The unique identifier for the job to cancel.
+
+    Returns:
+        A string message indicating whether the job was successfully cancelled.
     """
-    await ensure_scheduler_started()
+    if not scheduler:
+        return "❌ Scheduler not available."
 
     try:
         await ensure_async(scheduler.cancel_job(job_id))

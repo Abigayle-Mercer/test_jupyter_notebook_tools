@@ -1,6 +1,6 @@
 from . import ynotebook_tools
 from . import git_tools
-# from . import jupyter_scheduler_tools
+from . import jupyter_scheduler_tools
 
 
 
@@ -204,7 +204,97 @@ def jupyter_server_extension_tools() -> dict:
                 }
             },
             "callable": git_tools.git_get_repo_root
+        },
+                "scheduler_create_job": {
+            "metadata": {
+                "name": "scheduler_create_job",
+                "description": "Create a new scheduled job to run a notebook, optionally with a cron schedule.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "notebook_path": {
+                            "type": "string",
+                            "description": "Path to the notebook to schedule (e.g., '/path/to/notebook.ipynb')"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "A name for the job",
+                            "default": "Scheduled Job"
+                        },
+                        "cron_schedule": {
+                            "type": "string",
+                            "description": "Optional cron schedule string for recurrence (e.g., '0 * * * *')"
+                        }
+                    },
+                    "required": ["notebook_path"]
+                }
+            },
+            "callable": jupyter_scheduler_tools.scheduler_create_job
+        },
+        "scheduler_list_jobs": {
+            "metadata": {
+                "name": "scheduler_list_jobs",
+                "description": "List all scheduled jobs.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {}
+                }
+            },
+            "callable": jupyter_scheduler_tools.scheduler_list_jobs
+        },
+        "scheduler_get_job": {
+            "metadata": {
+                "name": "scheduler_get_job",
+                "description": "Get details about a specific job.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "job_id": {
+                            "type": "string",
+                            "description": "The unique ID of the job to look up"
+                        }
+                    },
+                    "required": ["job_id"]
+                }
+            },
+            "callable": jupyter_scheduler_tools.scheduler_get_job
+        },
+        "scheduler_cancel_job": {
+            "metadata": {
+                "name": "scheduler_cancel_job",
+                "description": "Cancel a scheduled job by its ID.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "job_id": {
+                            "type": "string",
+                            "description": "The unique ID of the job to cancel"
+                        }
+                    },
+                    "required": ["job_id"]
+                }
+            },
+            "callable": jupyter_scheduler_tools.scheduler_cancel_job
+        },
+        "scheduler_run_job": {
+            "metadata": {
+                "name": "scheduler_run_job",
+                "description": "Run a job immediately by its ID.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "job_id": {
+                            "type": "string",
+                            "description": "The unique ID of the job to run"
+                        }
+                    },
+                    "required": ["job_id"]
+                }
+            },
+            "callable": jupyter_scheduler_tools.scheduler_run_job
         }
+
+
 
     }
 
